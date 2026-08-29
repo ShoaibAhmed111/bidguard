@@ -7,3 +7,4 @@ pymupdf
 rapidfuzz
 python-multipart
 pytest
+pytest-asyncio
