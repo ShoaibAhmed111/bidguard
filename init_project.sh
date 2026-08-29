@@ -43,17 +43,17 @@ BACKEND_DIRS=(
 )
 
 FRONTEND_DIRS=(
-  frontend/app
-  frontend/app/(dashboard)
-  frontend/app/(dashboard)/bids
-  frontend/app/(dashboard)/compliance
-  frontend/app/(dashboard)/reports
-  frontend/components
-  frontend/components/ui
-  frontend/lib
-  frontend/hooks
-  frontend/types
-  frontend/public
+  "frontend/app"
+  "frontend/app/(dashboard)"
+  "frontend/app/(dashboard)/bids"
+  "frontend/app/(dashboard)/compliance"
+  "frontend/app/(dashboard)/reports"
+  "frontend/components"
+  "frontend/components/ui"
+  "frontend/lib"
+  "frontend/hooks"
+  "frontend/types"
+  "frontend/public"
 )
 
 for dir in "${BACKEND_DIRS[@]}" "${FRONTEND_DIRS[@]}"; do
