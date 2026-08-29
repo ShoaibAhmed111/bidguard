@@ -105,8 +105,8 @@ fi
 # ----------------------------------------------------------
 log "Checking backend entrypoint..."
 
-if [ ! -f backend/app/main.py ]; then
-  cat > backend/app/main.py <<'EOF'
+if [ ! -f backend/main.py ]; then
+  cat > backend/main.py <<'EOF'
 from fastapi import FastAPI
 
 app = FastAPI(
@@ -120,9 +120,9 @@ app = FastAPI(
 async def health() -> dict:
     return {"status": "ok", "service": "bidguard-ai"}
 EOF
-  ok "Created backend/app/main.py"
+  ok "Created backend/main.py"
 else
-  ok "backend/app/main.py already exists (skipped)"
+  ok "backend/main.py already exists (skipped)"
 fi
 
 # ----------------------------------------------------------
