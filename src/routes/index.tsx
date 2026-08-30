@@ -33,7 +33,7 @@ export const Route = createFileRoute("/")({
 });
 
 const API_BASE_URL =
-  (import.meta.env["VITE_API_BASE_URL"] as string | undefined) ?? "http://localhost:8000/api/v1";
+  (import.meta.env["VITE_API_BASE_URL"] as string | undefined) ?? "http://localhost:8001/api/v1";
 
 const DEFAULT_TENDER_ID = "GEM-2026-CPCL-001";
 const DEFAULT_MIN_LOCAL_CONTENT = 50;
