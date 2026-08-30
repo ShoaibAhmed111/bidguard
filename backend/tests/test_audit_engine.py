@@ -1,3 +1,5 @@
+import pytest
+
 from models.schemas import (
     ClauseStatus,
     ExtractedBidData,

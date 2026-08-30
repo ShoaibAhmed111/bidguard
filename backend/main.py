@@ -1,8 +1,15 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
-from services.gateway_interface import VerificationGatewayError, VerificationNotFoundError
+from models.schemas import BidComplianceReport
+from services.audit_engine import BidComplianceAuditEngine
+from services.gateway_interface import (
+    VerificationGatewayError,
+    VerificationNotFoundError,
+    get_gateway,
+)
+from services.parser import BidDocumentParser
 from services.sandbox_gateway import SandboxVerificationGateway
 
 app = FastAPI(
@@ -20,6 +27,9 @@ app.add_middleware(
 )
 
 sandbox_gateway = SandboxVerificationGateway()
+gateway = get_gateway()
+parser = BidDocumentParser()
+audit_engine = BidComplianceAuditEngine(gateway=gateway)
 
 
 def _raise_gateway_error(exc: VerificationGatewayError) -> None:
@@ -63,3 +73,33 @@ async def mock_debarment(pan: str):
         _raise_gateway_error(exc)
     except VerificationGatewayError as exc:
         _raise_gateway_error(exc)
+
+
+@app.post("/api/v1/tenders/evaluate", response_model=BidComplianceReport)
+async def evaluate_tender(
+    file: UploadFile = File(...),
+    tender_id: str = Form("GEM-2026-CPCL-001"),
+    min_local_content_pct: float = Form(50.0),
+) -> BidComplianceReport:
+    filename = file.filename or ""
+    if not filename.lower().endswith(".pdf"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only PDF bid documents are supported",
+        )
+
+    file_bytes = await file.read()
+    extracted_data = await parser.parse_pdf(file_bytes)
+    if not extracted_data.legal_name:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Unable to extract readable text from PDF",
+        )
+
+    return await audit_engine.audit_bid(
+        extracted_data,
+        tender_criteria={
+            "tender_id": tender_id,
+            "min_local_content_pct": min_local_content_pct,
+        },
+    )
