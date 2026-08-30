@@ -14,7 +14,7 @@ echo Waiting for services to initialize...
 timeout /t 3 /nobreak >nul
 
 echo Opening BidGuard AI Dashboard in Browser...
-start http://localhost:3000
+start http://localhost:8080
 
 echo ===================================================
 echo Both services are running in background windows.
